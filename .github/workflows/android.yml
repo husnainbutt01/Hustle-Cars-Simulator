@@ -1,0 +1,30 @@
+
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3.0
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Create output folder
+        run: mkdir -p build
+
+      - name: Import project
+        run: godot --headless --editor --path . --quit
+
+      - name: Export APK
+        run: godot --headless --path . --export-debug "Android" build/HustleCars.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: HustleCars-Android-APK
+          path: build/HustleCars.apk
+          if-no-files-found: error
